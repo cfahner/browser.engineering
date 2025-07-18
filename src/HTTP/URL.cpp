@@ -72,27 +72,33 @@ URL URL::parse_string(std::string_view url_string) {
 	return URL{scheme, hostname, port, path, query};
 }
 
+URL::operator std::string() const {
+	std::string result{};
+	if (scheme.length() > 0) {
+		result += scheme + "://";
+	}
+	if (hostname.length() > 0) {
+		result += hostname;
+		if (port != 80) {
+			result += ":" + port;
+		}
+	}
+	if (path.length() > 0) {
+		result += path;
+	}
+	if (query.length() > 0) {
+		result += query;
+	}
+	return result;
+}
+
 std::ostream& operator<<(std::ostream& os, URL& url) {
 	os << const_cast<const URL&>(url);
 	return os;
 }
 
 std::ostream& operator<<(std::ostream& os, const URL& url) {
-	if (url.scheme.length() > 0) {
-		os << url.scheme << "://";
-	}
-	if (url.hostname.length() > 0) {
-		os << url.hostname;
-		if (url.port != 80) {
-			os << ":" << url.port;
-		}
-	}
-	if (url.path.length() > 0) {
-		os << url.path;
-	}
-	if (url.query.length() > 0) {
-		os << url.query;
-	}
+	os << static_cast<std::string>(url);
 	return os;
 }
 

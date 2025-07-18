@@ -16,6 +16,8 @@ struct URL {
 	std::string path{};
 	std::string query{};
 
+	operator std::string() const;
+
 	/** Parse a URL-string into a URL struct. */
 	static URL parse_string(std::string_view url_string);
 
