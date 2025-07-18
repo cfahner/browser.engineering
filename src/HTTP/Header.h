@@ -9,8 +9,15 @@
 namespace HTTP {
 
 struct Header {
-	const std::string name;
-	const std::string value;
+	std::string name;
+	std::string value;
+
+	operator std::string() const;
+
+	static Header from_response_status(std::string_view status_line);
+
+	static Header from_string(std::string_view header_line);
+
 };
 
 }
