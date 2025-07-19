@@ -18,6 +18,8 @@ struct Header {
 
 	static Header from_string(std::string_view header_line);
 
+	Header(std::string name, std::string value);
+
 };
 
 }

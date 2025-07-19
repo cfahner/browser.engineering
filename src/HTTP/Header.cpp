@@ -42,13 +42,19 @@ Header Header::from_string(std::string_view header_line) {
 	size_t colon_position = header_line.find(':');
 	if (colon_position != std::string_view::npos) {
 		name = header_line.substr(0, colon_position);
-		string_to_lowercase(name);
 		value = header_line.substr(colon_position + 1);
 		if (value[0] == ' ') {
 			value = value.substr(1);
 		}
 	}
 	return Header{name, value};
+}
+
+Header::Header(std::string name, std::string value)
+	: name{name}
+	, value{value}
+{
+	string_to_lowercase(name);
 }
 
 }
