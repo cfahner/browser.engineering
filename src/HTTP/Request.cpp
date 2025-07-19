@@ -3,6 +3,7 @@
  * MIT License
  */
 #include <string>
+#include <unordered_set>
 #include <vector>
 #include <curl/curl.h>
 
@@ -16,6 +17,8 @@
 namespace HTTP {
 
 namespace {
+
+static const std::unordered_set<std::string> SCHEME_WHITELIST{"file", "http", "https"};
 
 static size_t write_callback_for_curl(void *contents, size_t size, size_t nmemb, void *userp) {
 	((std::string*)userp)->append((char*)contents, size * nmemb);
@@ -32,7 +35,10 @@ Request::Request(Method method, URL url, std::vector<Header> headers, std::strin
 }
 
 Response Request::send() {
-	if (url.scheme.length() != 0 && url.scheme != "http" && url.scheme != "https") {
+	if (url.scheme.length() == 0) {
+		url.scheme = "http"; // prevents CURL from defaulting to other protocols based on hostname
+	}
+	if (!SCHEME_WHITELIST.contains(url.scheme)) {
 		throw NetworkException{"Protocol not allowed (" + url.scheme + ")"};
 	}
 	// based on https://gist.github.com/alghanmi/c5d7b761b2c9ab199157

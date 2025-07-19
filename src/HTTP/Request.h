@@ -25,6 +25,8 @@ struct Request : Message {
 		std::string body = ""
 	);
 
+	Request(Request&& request) = default;
+
 	Response send();
 
 };
