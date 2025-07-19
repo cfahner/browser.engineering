@@ -7,17 +7,16 @@
 #include <string>
 #include <vector>
 
-#include "Header.h"
+#include "Message.h"
 #include "Method.h"
+#include "Response.h"
 #include "URL.h"
 
 namespace HTTP {
 
-struct Request {
+struct Request : Message {
 	Method method;
 	URL url;
-	std::vector<Header> headers;
-	std::string body;
 
 	Request(
 		Method method,
@@ -25,6 +24,8 @@ struct Request {
 		std::vector<Header> headers = std::vector<Header>(),
 		std::string body = ""
 	);
+
+	Response send();
 
 };
 
