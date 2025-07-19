@@ -13,7 +13,8 @@ namespace HTTP {
 namespace {
 
 void string_to_lowercase(std::string& input) {
-	std::transform(input.begin(), input.end(), input.begin(), [](unsigned char c) { return std::tolower(c); });
+	auto tolower_callback = [](unsigned char c) { return std::tolower(c); };
+	std::transform(input.begin(), input.end(), input.begin(), tolower_callback);
 }
 
 }
@@ -26,7 +27,11 @@ Header Header::from_response_status(std::string_view status_line) {
 	std::string parsed{};
 	size_t space_position = status_line.find(' ');
 	if (space_position != std::string_view::npos) {
-		parsed = status_line.substr(space_position + 1, status_line.find(' ', space_position));
+		size_t next_space_position = status_line.find(' ', space_position + 1);
+		size_t status_length = next_space_position != std::string_view::npos
+			? next_space_position - space_position
+			: std::string_view::npos;
+		parsed = status_line.substr(space_position + 1, status_length);
 	}
 	return Header{":status", parsed};
 }
