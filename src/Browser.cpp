@@ -4,6 +4,7 @@
  */
 #include <string>
 
+#include "Browser.h"
 #include "HTTP/Header.h"
 #include "HTTP/Method.h"
 #include "HTTP/NetworkException.h"
@@ -11,7 +12,11 @@
 #include "HTTP/Response.h"
 #include "HTTP/URL.h"
 #include "HTTP/URLParseException.h"
-#include "Browser.h"
+
+Browser::Browser() {
+	maximize();
+	set_child(m_document_display);
+}
 
 void Browser::visit(std::string_view url_string) {
 	try {

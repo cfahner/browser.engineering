@@ -22,10 +22,10 @@ OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
 DEPS = $(OBJECTS:.o=.d)
 
 # flags #
-COMPILE_FLAGS = -std=c++23 -Wall -Wextra -g
+COMPILE_FLAGS = -std=c++23 -Wall -Wextra -g `pkg-config gtkmm-4.0 --cflags`
 INCLUDES = -I include/ -I /usr/local/include
 # Space-separated pkg-config libraries used by this project
-LIBS = -lcurl
+LIBS = -lcurl `pkg-config gtkmm-4.0 --libs`
 
 .PHONY: default_target
 default_target: release

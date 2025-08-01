@@ -3,16 +3,11 @@
  * MIT License
  */
 
-#include <iostream>
-#include <string>
+#include <gtkmm/application.h>
 
 #include "Browser.h"
 
-int main(void) {
-	Browser browser{};
-	std::cout << "Type URL: ";
-	std::string url_string{""};
-	std::getline(std::cin, url_string);
-	browser.visit(url_string);
-	return 0;
+int main(int argc, char* argv[]) {
+	auto app = Gtk::Application::create("com.frisiapp.cf.browser-engineering");
+	return app->make_window_and_run<Browser>(argc, argv);
 }
