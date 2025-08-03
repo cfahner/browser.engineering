@@ -5,6 +5,7 @@
 #include <string>
 
 #include "BrowserWindow.h"
+#include "../HTML/Parser.h"
 #include "../HTTP/Header.h"
 #include "../HTTP/Method.h"
 #include "../HTTP/NetworkException.h"
@@ -23,13 +24,11 @@ BrowserWindow::BrowserWindow() {
 void BrowserWindow::visit(std::string_view url_string) {
 	try {
 		HTTP::Response response{fetch_url(url_string)};
-		for (const HTTP::Header& header : response.headers) {
-			std::cout << static_cast<std::string>(header) << std::endl;
-		}
+		m_document_view.display_html(response.body);
 	} catch (HTTP::NetworkException& ne) {
-		std::cout << "Network error: " << ne.what() << std::endl;
+		std::cerr << "Network error: " << ne.what() << std::endl;
 	} catch (HTTP::URLParseException& upe) {
-		std::cout << "Could not parse URL: " << upe.what() << std::endl;
+		std::cerr << "Could not parse URL: " << upe.what() << std::endl;
 	}
 }
 
