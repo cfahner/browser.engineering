@@ -24,17 +24,25 @@ std::string Parser::lex(std::string& html) {
 
 	int32_t start = break_iterator->first();
 	int32_t end = break_iterator->next();
+	bool in_tag{false};
+	std::string out_text{};
 	while (end != icu::BreakIterator::DONE) {
 		icu::UnicodeString unicode_char{html_unicode, start, end - start};
 
 		std::string std_string;
 		unicode_char.toUTF8String(std_string);
-		std::cout << std_string;
+		if (std_string == "<") {
+			in_tag = true;
+		} else if (std_string == ">") {
+			in_tag = false;
+		} else if (!in_tag) {
+			out_text += std_string;
+		}
 
 		start = end;
 		end = break_iterator->next();
 	}
-	return {};
+	return out_text;
 }
 
 }
