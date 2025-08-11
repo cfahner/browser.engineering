@@ -59,6 +59,11 @@ void DocumentView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int, int) {
 		<< std::endl;
 }
 
+void DocumentView::on_resize(int width, int height) {
+	m_layout_needed = true;
+	queue_draw();
+}
+
 void DocumentView::layout() {
 	clear_display_list();
 
