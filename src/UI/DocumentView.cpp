@@ -34,6 +34,7 @@ void DocumentView::on_draw(
 		layout();
 	}
 	for (auto& item : m_display_list) {
+		// https://gnome.pages.gitlab.gnome.org/gtkmm-documentation/sec-drawing-text.html
 		cr->move_to(item->m_x, item->m_y - m_scroll);
 		item->m_text_layout->show_in_cairo_context(cr);
 	}
