@@ -2,7 +2,11 @@
  * Copyright (c) 2025, C. Fahner
  * MIT License
  */
+#include <gdk/gdkkeysyms.h>
+#include <gtkmm/eventcontrollerkey.h>
+#include <memory>
 #include <string>
+#include <iostream>
 
 #include "BrowserWindow.h"
 #include "../HTML/Parser.h"
@@ -19,6 +23,10 @@ namespace UI {
 BrowserWindow::BrowserWindow() {
 	maximize();
 	set_child(m_document_view);
+
+	std::shared_ptr<Gtk::EventControllerKey> controller = Gtk::EventControllerKey::create();
+	controller->signal_key_released().connect(sigc::mem_fun(*this, &BrowserWindow::on_key_released), false);
+	add_controller(controller);
 }
 
 void BrowserWindow::visit(std::string_view url_string) {
@@ -44,6 +52,14 @@ HTTP::Request BrowserWindow::create_request(HTTP::Method method, HTTP::URL url) 
 	HTTP::Request request{method, url};
 	request.headers.push_back(HTTP::Header{"user-agent", "CFahnerBrowser"});
 	return request;
+}
+
+void BrowserWindow::on_key_released(guint key_value, guint, Gdk::ModifierType) {
+	if (key_value == GDK_KEY_Down) {
+		m_document_view.scroll(KEY_SCROLL_AMOUNT);
+	} else if (key_value == GDK_KEY_Up) {
+		m_document_view.scroll(-KEY_SCROLL_AMOUNT);
+	}
 }
 
 }

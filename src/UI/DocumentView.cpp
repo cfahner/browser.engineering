@@ -25,11 +25,15 @@ void DocumentView::display_html(std::string& html) {
 	queue_draw();
 }
 
-void DocumentView::on_draw(
-	const Cairo::RefPtr<Cairo::Context>& cr,
-	[[maybe_unused]] int width,
-	[[maybe_unused]] int height
-) {
+void DocumentView::scroll(int delta) {
+	m_scroll += delta;
+	if (m_scroll < 0) {
+		m_scroll = 0;
+	}
+	queue_draw();
+}
+
+void DocumentView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int, int) {
 	if (m_layout_needed) {
 		layout();
 	}
