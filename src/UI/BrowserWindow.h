@@ -29,6 +29,7 @@ private:
 	HTTP::Request create_request(HTTP::Method method, HTTP::URL url);
 	HTTP::Response fetch_url(std::string_view url_string);
 	void on_key_released(guint key_value, guint key_code, Gdk::ModifierType state);
+	bool on_mouse_scroll(double dx, double dy);
 
 };
 

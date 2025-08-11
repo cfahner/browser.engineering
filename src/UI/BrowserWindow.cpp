@@ -4,6 +4,7 @@
  */
 #include <gdk/gdkkeysyms.h>
 #include <gtkmm/eventcontrollerkey.h>
+#include <gtkmm/eventcontrollerscroll.h>
 #include <memory>
 #include <string>
 #include <iostream>
@@ -24,9 +25,16 @@ BrowserWindow::BrowserWindow() {
 	maximize();
 	set_child(m_document_view);
 
-	std::shared_ptr<Gtk::EventControllerKey> controller = Gtk::EventControllerKey::create();
-	controller->signal_key_released().connect(sigc::mem_fun(*this, &BrowserWindow::on_key_released), false);
-	add_controller(controller);
+	// Key released event
+	std::shared_ptr<Gtk::EventControllerKey> key_controller {Gtk::EventControllerKey::create()};
+	key_controller->signal_key_released().connect(sigc::mem_fun(*this, &BrowserWindow::on_key_released), false);
+	add_controller(key_controller);
+
+	// Mouse scroll event
+	std::shared_ptr<Gtk::EventControllerScroll> scroll_controller {Gtk::EventControllerScroll::create()};
+	scroll_controller->set_flags(Gtk::EventControllerScroll::Flags::VERTICAL);
+	scroll_controller->signal_scroll().connect(sigc::mem_fun(*this, &BrowserWindow::on_mouse_scroll), true);
+	add_controller(scroll_controller);
 }
 
 void BrowserWindow::visit(std::string_view url_string) {
@@ -60,6 +68,11 @@ void BrowserWindow::on_key_released(guint key_value, guint, Gdk::ModifierType) {
 	} else if (key_value == GDK_KEY_Up) {
 		m_document_view.scroll(-KEY_SCROLL_AMOUNT);
 	}
+}
+
+bool BrowserWindow::on_mouse_scroll(double, double dy) {
+	m_document_view.scroll(dy);
+	return true;
 }
 
 }
