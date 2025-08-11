@@ -6,15 +6,19 @@
 
 #include <gtkmm/drawingarea.h>
 #include <string>
+#include <vector>
 
 #include "../HTML/Parser.h"
+#include "DisplayCharacter.h"
 
 namespace UI {
 
 class DocumentView : public Gtk::DrawingArea {
 private:
-	HTML::Parser m_parser{};
-	std::string m_text_to_draw{};
+	HTML::Parser m_parser {};
+	std::string m_parsed_html {};
+	bool m_layout_needed {false};
+	std::vector<DisplayCharacter*> m_display_list {};
 
 public:
 	DocumentView();
@@ -23,6 +27,10 @@ public:
 
 protected:
 	void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height);
+
+private:
+	void layout();
+	void clear_display_list();
 
 };
 
