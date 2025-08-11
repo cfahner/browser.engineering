@@ -19,6 +19,7 @@ private:
 	std::string m_parsed_html {};
 	bool m_layout_needed {false};
 	std::vector<DisplayCharacter*> m_display_list {};
+	int m_scroll {0};
 
 public:
 	DocumentView();

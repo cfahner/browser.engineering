@@ -34,7 +34,7 @@ void DocumentView::on_draw(
 		layout();
 	}
 	for (auto& item : m_display_list) {
-		cr->move_to(item->m_x, item->m_y);
+		cr->move_to(item->m_x, item->m_y - m_scroll);
 		item->m_text_layout->show_in_cairo_context(cr);
 	}
 }
