@@ -3,11 +3,15 @@
  * MIT License
  */
 #include <cassert>
+#include <chrono>
+#include <iostream>
 #include <pangomm/layout.h>
 #include <string>
 #include <unicode/brkiter.h>
 
 #include "DocumentView.h"
+
+#define LINE_HEIGHT 20
 
 namespace UI {
 
@@ -34,14 +38,25 @@ void DocumentView::scroll(int delta) {
 }
 
 void DocumentView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int, int) {
+	auto fn_start = std::chrono::high_resolution_clock::now();
 	if (m_layout_needed) {
 		layout();
 	}
+	int height = get_height();
 	for (auto& item : m_display_list) {
+		if (item->m_y > m_scroll + height || item->m_y + LINE_HEIGHT < m_scroll) {
+			continue;
+		}
 		// https://gnome.pages.gitlab.gnome.org/gtkmm-documentation/sec-drawing-text.html
 		cr->move_to(item->m_x, item->m_y - m_scroll);
 		item->m_text_layout->show_in_cairo_context(cr);
 	}
+	auto fn_end = std::chrono::high_resolution_clock::now();
+	std::cout
+		<< "Draw duration: "
+		<< std::chrono::duration_cast<std::chrono::microseconds>(fn_end - fn_start).count() / 1000.0L
+		<< "ms"
+		<< std::endl;
 }
 
 void DocumentView::layout() {
@@ -61,7 +76,6 @@ void DocumentView::layout() {
 
 	int cursor_x = 0;
 	int cursor_y = 0;
-	int line_height = 20;
 	int32_t start = break_iterator->first();
 	int32_t end = break_iterator->next();
 	while (end != icu::BreakIterator::DONE) {
@@ -82,7 +96,7 @@ void DocumentView::layout() {
 		cursor_x += text_width;
 		if (cursor_x > get_width()) {
 			cursor_x = 0;
-			cursor_y += line_height;
+			cursor_y += LINE_HEIGHT;
 		}
 
 		start = end;
