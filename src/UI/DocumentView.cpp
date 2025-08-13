@@ -13,6 +13,7 @@
 
 #define LINE_HEIGHT 20
 
+#include <iostream>
 namespace UI {
 
 DocumentView::DocumentView() {
@@ -59,7 +60,7 @@ void DocumentView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int, int) {
 		<< std::endl;
 }
 
-void DocumentView::on_resize(int width, int height) {
+void DocumentView::on_resize(int, int) {
 	m_layout_needed = true;
 	queue_draw();
 }
@@ -68,13 +69,12 @@ void DocumentView::layout() {
 	clear_display_list();
 
 	Pango::FontDescription font{};
-	font.set_family("Monospace");
 
 	icu::UnicodeString u_html {icu::UnicodeString::fromUTF8(icu::StringPiece {m_parsed_html.c_str()})};
 
 	UErrorCode u_error{U_ZERO_ERROR};
 	std::unique_ptr<icu::BreakIterator> break_iterator {
-		icu::BreakIterator::createCharacterInstance(icu::Locale::getDefault(), u_error)
+		icu::BreakIterator::createWordInstance(icu::Locale::getDefault(), u_error)
 	};
 	assert(U_SUCCESS(u_error));
 	break_iterator->setText(u_html);
@@ -96,8 +96,13 @@ void DocumentView::layout() {
 		int text_width;
 		int text_height;
 		display_character->m_text_layout->get_pixel_size(text_width, text_height);
+		if (cursor_x + text_width > get_width()) {
+			cursor_x = 0;
+			cursor_y += LINE_HEIGHT;
+			display_character->m_x = cursor_x;
+			display_character->m_y = cursor_y;
+		}
 		m_display_list.push_back(display_character);
-
 		cursor_x += text_width;
 		if (cursor_x > get_width()) {
 			cursor_x = 0;
