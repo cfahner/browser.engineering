@@ -7,7 +7,6 @@
 #include <gtkmm/eventcontrollerscroll.h>
 #include <memory>
 #include <string>
-#include <iostream>
 
 #include "BrowserWindow.h"
 #include "../HTML/Parser.h"
@@ -42,9 +41,13 @@ void BrowserWindow::visit(std::string_view url_string) {
 		HTTP::Response response{fetch_url(url_string)};
 		m_document_view.display_html(response.body);
 	} catch (HTTP::NetworkException& ne) {
-		std::cerr << "Network error: " << ne.what() << std::endl;
+		std::string net_error {"Network error: "};
+		net_error += std::string {ne.what()};
+		m_document_view.display_html(net_error);
 	} catch (HTTP::URLParseException& upe) {
-		std::cerr << "Could not parse URL: " << upe.what() << std::endl;
+		std::string url_error {"URL error: "};
+		url_error += std::string {upe.what()};
+		m_document_view.display_html(url_error);
 	}
 }
 
