@@ -104,10 +104,6 @@ void DocumentView::layout() {
 		}
 		m_display_list.push_back(display_character);
 		cursor_x += text_width;
-		if (cursor_x > get_width()) {
-			cursor_x = 0;
-			cursor_y += LINE_HEIGHT;
-		}
 
 		start = end;
 		end = break_iterator->next();
