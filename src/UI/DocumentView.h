@@ -9,16 +9,16 @@
 #include <vector>
 
 #include "../HTML/Parser.h"
-#include "DisplayCharacter.h"
+#include "DisplaySpan.h"
 
 namespace UI {
 
 class DocumentView : public Gtk::DrawingArea {
 private:
 	HTML::Parser m_parser {};
-	std::string m_parsed_html {};
+	std::vector<HTML::Token>* m_token_list {};
 	bool m_layout_needed {false};
-	std::vector<DisplayCharacter*> m_display_list {};
+	std::vector<DisplaySpan*> m_display_list {};
 	int m_scroll {0};
 
 public:
@@ -33,6 +33,7 @@ protected:
 
 private:
 	void layout();
+	std::vector<Span*> text_to_spans(const std::string& text, const Pango::FontDescription font);
 	void clear_display_list();
 
 };
