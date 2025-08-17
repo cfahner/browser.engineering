@@ -17,6 +17,8 @@ public:
 	DisplaySpan(int x, int y, Span* span);
 	~DisplaySpan();
 
+	void set_position(int x, int y);
+
 };
 
 }

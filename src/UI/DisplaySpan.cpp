@@ -17,4 +17,9 @@ DisplaySpan::~DisplaySpan() {
 	m_span = nullptr;
 }
 
+void DisplaySpan::set_position(int x, int y) {
+	m_x = x;
+	m_y = y;
+}
+
 }
