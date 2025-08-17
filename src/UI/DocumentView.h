@@ -10,15 +10,14 @@
 
 #include "../HTML/Parser.h"
 #include "DisplaySpan.h"
+#include "Layout.h"
 
 namespace UI {
 
 class DocumentView : public Gtk::DrawingArea {
 private:
 	HTML::Parser m_parser {};
-	std::vector<HTML::Token>* m_token_list {};
-	bool m_layout_needed {false};
-	std::vector<DisplaySpan*> m_display_list {};
+	Layout* m_layout {nullptr};
 	int m_scroll {0};
 
 public:
@@ -30,11 +29,6 @@ public:
 protected:
 	void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height);
 	void on_resize(int width, int height) override;
-
-private:
-	void layout();
-	std::vector<Span*> text_to_spans(const std::string& text, const Pango::FontDescription font);
-	void clear_display_list();
 
 };
 
