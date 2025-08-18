@@ -31,6 +31,14 @@ Layout::Layout(Gtk::Widget* widget, std::vector<HTML::Token>& tokens, int width,
 				m_font.set_weight(Pango::Weight::BOLD);
 			} else if (token.m_data == "/b") {
 				m_font.set_weight(Pango::Weight::NORMAL);
+			} else if (token.m_data == "small" || token.m_data.substr(0, 6) == "small ") {
+				m_font.set_size(m_font.get_size() - 2);
+			} else if (token.m_data == "/small") {
+				m_font.set_size(m_font.get_size() + 2);
+			} else if (token.m_data == "big" || token.m_data.substr(0, 4) == "big ") {
+				m_font.set_size(m_font.get_size() + 4);
+			} else if (token.m_data == "/big") {
+				m_font.set_size(m_font.get_size() - 4);
 			}
 		}
 	}
