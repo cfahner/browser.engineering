@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <iostream>
+
 #include "Span.h"
 
 namespace UI {
@@ -22,3 +24,5 @@ public:
 };
 
 }
+
+std::ostream& operator<<(std::ostream& out, const UI::DisplaySpan& display_span);
