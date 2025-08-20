@@ -59,6 +59,14 @@ Layout::Layout(Gtk::Widget* widget, std::vector<HTML::Token>& tokens)
 				m_font.set_size(m_font.get_size() * 0.67);
 			} else if (token.m_data == "/h6") {
 				m_font.set_size(m_font.get_size() / 0.67);
+			} else if (token.m_data == "abbr" || token.m_data.substr(0, 5) == "abbr ") {
+				m_font.set_variant(Pango::Variant::SMALL_CAPS);
+			} else if (token.m_data == "/abbr") {
+				m_font.set_variant(Pango::Variant::NORMAL);
+			} else if (token.m_data == "pre" || token.m_data.substr(0, 4) == "pre ") {
+				m_font.set_family("monospace");
+			} else if (token.m_data == "/pre") {
+				m_font.set_family("");
 			}
 		}
 	}
