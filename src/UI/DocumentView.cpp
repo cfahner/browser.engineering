@@ -2,18 +2,12 @@
  * Copyright (c) 2025, C. Fahner
  * MIT License
  */
-#include <cassert>
 #include <chrono>
 #include <iostream>
-#include <memory>
-#include <pangomm/layout.h>
 #include <string>
-#include <unicode/brkiter.h>
 #include <vector>
 
 #include "DocumentView.h"
-
-#define LINE_HEIGHT 20
 
 namespace UI {
 
@@ -26,7 +20,7 @@ DocumentView::~DocumentView() = default;
 void DocumentView::display_html(std::string& html) {
 	std::vector<HTML::Token>* tokens {m_parser.lex(html)};
 	delete m_layout;
-	m_layout = new Layout {this, *tokens, get_width(), get_height()};
+	m_layout = new Layout {this, *tokens};
 	delete tokens;
 	queue_draw();
 }
@@ -62,8 +56,7 @@ void DocumentView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, i
 		<< std::endl;
 }
 
-void DocumentView::on_resize(int width, int height) {
-	m_layout->set_size(width, height);
+void DocumentView::on_resize(int, int) {
 	queue_draw();
 }
 
