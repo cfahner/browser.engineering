@@ -132,13 +132,13 @@ void Layout::recalculate_positions() {
 	int cursor_y {0};
 	for (auto& item : m_display_list) {
 		if (!line.try_add(item)) {
-			cursor_y += static_cast<int>(line.get_line_height() * 1.25);
-			line.finalize();
+			int line_height = static_cast<int>(line.get_line_height() * 1.25);
+			line.finalize(cursor_y); // line_height is zero after this call
+			cursor_y += line_height;
 			line.try_add(item); // guaranteed to work for empty lines
 		}
-		item->m_y = cursor_y;
 	}
-	line.finalize();
+	line.finalize(cursor_y);
 }
 
 void Layout::clear_display_list() {

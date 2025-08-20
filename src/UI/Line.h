@@ -24,9 +24,17 @@ public:
 	 */
 	bool try_add(DisplaySpan* display_span);
 
+	/** Returns the line height in pixels */
 	int get_line_height();
 
-	void finalize();
+	/** Returns the baseline from the top of the line in pixels */
+	int get_baseline();
+
+	/**
+	 * Aligns all items in the line along the baseline and clears the line
+	 * @param cursor_y The y-position of the top of the line
+	 */
+	void finalize(int cursor_y);
 
 };
 

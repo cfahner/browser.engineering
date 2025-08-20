@@ -2,7 +2,7 @@
  * MIT License
  */
 #include "Line.h"
-#include <iostream>
+
 namespace UI {
 
 Line::Line(int width)
@@ -39,7 +39,23 @@ int Line::get_line_height() {
 	return max;
 }
 
-void Line::finalize() {
+int Line::get_baseline() {
+	int max = 0;
+	for (auto& display_span : m_display_spans) {
+		int baseline = display_span->m_span->m_text_layout->get_baseline();
+		if (baseline > max) {
+			max = baseline;
+		}
+	}
+	return max / PANGO_SCALE;
+}
+
+void Line::finalize(int cursor_y) {
+	int line_baseline = get_baseline();
+	for (auto& display_span : m_display_spans) {
+		int span_baseline = display_span->m_span->m_text_layout->get_baseline() / PANGO_SCALE;
+		display_span->m_y = cursor_y + (line_baseline - span_baseline);
+	}
 	m_display_spans.clear();
 }
 
