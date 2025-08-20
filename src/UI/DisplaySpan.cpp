@@ -28,5 +28,5 @@ std::ostream& operator<<(std::ostream& out, const UI::DisplaySpan& display_span)
 	return out << "DisplaySpan { "
 		<< display_span.m_x << ", "
 		<< display_span.m_y << ", "
-		<< display_span.m_span << " }";
+		<< *display_span.m_span << " }";
 }
