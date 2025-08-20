@@ -20,11 +20,11 @@ public:
 private:
 	Gtk::Widget* m_widget;
 	Pango::FontDescription m_font {};
-	int m_width {0};
-	int m_height {0};
+	int m_width {-1};
+	int m_height {-1};
 
 public:
-	Layout(Gtk::Widget* widget, std::vector<HTML::Token>& tokens, int width, int height);
+	Layout(Gtk::Widget* widget, std::vector<HTML::Token>& tokens);
 	~Layout();
 
 	void set_width(int width);
@@ -32,7 +32,7 @@ public:
 	void set_size(int width, int height);
 
 private:
-	std::vector<Span*> text_to_spans(const std::string& text, const Pango::FontDescription font);
+	std::vector<Span*> text_to_spans(const std::string& text, const Pango::FontDescription& font);
 	void recalculate_positions();
 	void clear_display_list();
 

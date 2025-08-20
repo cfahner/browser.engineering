@@ -7,16 +7,16 @@
 #include <unicode/brkiter.h>
 
 #include "Layout.h"
+#include "Line.h"
 
-#define LINE_HEIGHT 20
+#define DEFAULT_FONT_SIZE 16
 
 namespace UI {
 
-Layout::Layout(Gtk::Widget* widget, std::vector<HTML::Token>& tokens, int width, int height)
+Layout::Layout(Gtk::Widget* widget, std::vector<HTML::Token>& tokens)
 	: m_widget {widget}
-	, m_width {width}
-	, m_height {height}
 {
+	m_font.set_size(DEFAULT_FONT_SIZE * PANGO_SCALE);
 	for (auto& token : tokens) {
 		if (token.is_text()) {
 			for (auto& span : text_to_spans(token.m_data, m_font)) {
@@ -32,17 +32,36 @@ Layout::Layout(Gtk::Widget* widget, std::vector<HTML::Token>& tokens, int width,
 			} else if (token.m_data == "/b") {
 				m_font.set_weight(Pango::Weight::NORMAL);
 			} else if (token.m_data == "small" || token.m_data.substr(0, 6) == "small ") {
-				m_font.set_size(m_font.get_size() - 2);
+				m_font.set_size(m_font.get_size() - 2 * PANGO_SCALE);
 			} else if (token.m_data == "/small") {
-				m_font.set_size(m_font.get_size() + 2);
+				m_font.set_size(m_font.get_size() + 2 * PANGO_SCALE);
 			} else if (token.m_data == "big" || token.m_data.substr(0, 4) == "big ") {
-				m_font.set_size(m_font.get_size() + 4);
+				m_font.set_size(m_font.get_size() + 4 * PANGO_SCALE);
 			} else if (token.m_data == "/big") {
-				m_font.set_size(m_font.get_size() - 4);
+				m_font.set_size(m_font.get_size() - 4 * PANGO_SCALE);
+			} else if (token.m_data == "h1" || token.m_data.substr(0, 3) == "h1 ") {
+				m_font.set_size(m_font.get_size() * 2);
+			} else if (token.m_data == "/h1") {
+				m_font.set_size(m_font.get_size() / 2);
+			} else if (token.m_data == "h2" || token.m_data.substr(0, 3) == "h2 ") {
+				m_font.set_size(m_font.get_size() * 1.5);
+			} else if (token.m_data == "/h2") {
+				m_font.set_size(m_font.get_size() / 1.5);
+			} else if (token.m_data == "h3" || token.m_data.substr(0, 3) == "h3 ") {
+				m_font.set_size(m_font.get_size() * 1.17);
+			} else if (token.m_data == "/h3") {
+				m_font.set_size(m_font.get_size() / 1.17);
+			} else if (token.m_data == "h5" || token.m_data.substr(0, 3) == "h5 ") {
+				m_font.set_size(m_font.get_size() * 0.83);
+			} else if (token.m_data == "/h5") {
+				m_font.set_size(m_font.get_size() / 0.83);
+			} else if (token.m_data == "h6" || token.m_data.substr(0, 3) == "h6 ") {
+				m_font.set_size(m_font.get_size() * 0.67);
+			} else if (token.m_data == "/h6") {
+				m_font.set_size(m_font.get_size() / 0.67);
 			}
 		}
 	}
-	recalculate_positions();
 }
 
 Layout::~Layout() {
@@ -75,7 +94,7 @@ void Layout::set_size(int width, int height) {
 	}
 }
 
-std::vector<Span*> Layout::text_to_spans(const std::string& text, const Pango::FontDescription font) {
+std::vector<Span*> Layout::text_to_spans(const std::string& text, const Pango::FontDescription& font) {
 	icu::UnicodeString unicode_text {icu::UnicodeString::fromUTF8(icu::StringPiece {text.c_str()})};
 
 	UErrorCode u_error{U_ZERO_ERROR};
@@ -94,10 +113,13 @@ std::vector<Span*> Layout::text_to_spans(const std::string& text, const Pango::F
 		std::string word;
 		unicode_word.toUTF8String(word);
 
+		if (word.find_first_not_of(" \t\n\v\f\r") == std::string::npos) {
+			word = std::string {" "};
+		}
+
 		std::shared_ptr<Pango::Layout> pango_word {m_widget->create_pango_layout(word)};
-		Span* span = new Span {pango_word};
-		span->m_text_layout->set_font_description(font);
-		spans.push_back(span);
+		pango_word->set_font_description(font);
+		spans.push_back(new Span {pango_word});
 
 		start = end;
 		end = break_iterator->next();
@@ -106,16 +128,17 @@ std::vector<Span*> Layout::text_to_spans(const std::string& text, const Pango::F
 }
 
 void Layout::recalculate_positions() {
-	int cursor_x {0};
+	Line line {m_width};
 	int cursor_y {0};
 	for (auto& item : m_display_list) {
-		if (cursor_x + item->m_span->m_width > m_width) {
-			cursor_x = 0;
-			cursor_y += LINE_HEIGHT;
+		if (!line.try_add(item)) {
+			cursor_y += static_cast<int>(line.get_line_height() * 1.25);
+			line.finalize();
+			line.try_add(item); // guaranteed to work for empty lines
 		}
-		item->set_position(cursor_x, cursor_y);
-		cursor_x += item->m_span->m_width;
+		item->m_y = cursor_y;
 	}
+	line.finalize();
 }
 
 void Layout::clear_display_list() {
