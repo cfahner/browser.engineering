@@ -19,6 +19,9 @@ struct Token {
 	bool is_text() const;
 	bool is_tag() const;
 
+private:
+	std::string decode_entities(std::string& input);
+
 };
 
 }
